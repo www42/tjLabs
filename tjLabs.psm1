@@ -1,7 +1,10 @@
 ﻿function PublishToMyGet-tjLabs {
   $Repo = "MyGet"
   $ModuleName = "tjLabs"
-  $Dir = 'C:\Git\tjLabs'
+
+  $PathToModule = 'C:\Git\tjLabs'
+  [string]$Dir = Read-Host -Prompt "Path to module  [$PathToModule]"
+  if ([string]::IsNullOrEmpty($Dir)) {$Dir = $PathToModule}
 
   $Repo = "MyGet"
   $NuGetApiKey = Read-Host -Prompt "NuGetApiKey" 
