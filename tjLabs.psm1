@@ -1,16 +1,21 @@
-﻿function PublishToMyGet-tjLabs {
-  $Repo = "MyGet"
-  $ModuleName = "tjLabs"
+﻿function PublishToMyGet-Module {
+  [CmdletBinding()]Param(
+  [Parameter(Mandatory=$true,Position=1)][string]$ModuleName
+  )
 
-  $PathToModule = 'C:\Git\tjLabs'
-  [string]$Dir = Read-Host -Prompt "Path to module  [$PathToModule]"
-  if ([string]::IsNullOrEmpty($Dir)) {$Dir = $PathToModule}
+  Get-PSRepository | ft Name,SourceLocation,PublishLocation
+  
+  $PathDefault = "C:\Git\$ModuleName"
+  [string]$PathToModule = Read-Host -Prompt "Path to module  [$PathDefault]"
+  if ([string]::IsNullOrEmpty($PathToModule)) {$PathToModule = $PathDefault}
 
-  $Repo = "MyGet"
+  $RepoDefault = "MyGet"
+  [string]$Repo = Read-Host -Prompt "Repo  [$RepoDefault]"
+  if ([string]::IsNullOrEmpty($Repo)) {$Repo = $RepoDefault}
+
   $NuGetApiKey = Read-Host -Prompt "NuGetApiKey" 
 
-  Get-PSRepository -Name $Repo | fl Name,SourceLocation,PublishLocation
-  Publish-Module -Path $Dir -Repository $Repo -NuGetApiKey $NuGetApiKey
+  Publish-Module -Path $PathToModule -Repository $Repo -NuGetApiKey $NuGetApiKey
 }
 
 function ConvertTo-VmComputerName {
