@@ -15,14 +15,15 @@
 
   $NuGetApiKey = Read-Host -Prompt "NuGetApiKey" 
 
-  $PathTemp = "$PathToModule\temp"
+  $PathTemp = "$PathToModule\temp\$ModuleName"
   mkdir $PathTemp
   copy "$PathToModule\$ModuleName.psm1" $PathTemp
   copy "$PathToModule\$ModuleName.psd1" $PathTemp
+  Pause
 
   Publish-Module -Path $PathTemp -Repository $Repo -NuGetApiKey $NuGetApiKey
 
-  Remove-Item -Path $PathTemp -Recurse -Force
+  Remove-Item -Path "$PathToModule\temp" -Recurse -Force
 }
 
 function ConvertTo-VmComputerName {
