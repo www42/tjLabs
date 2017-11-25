@@ -16,11 +16,10 @@
   $NuGetApiKey = Read-Host -Prompt "NuGetApiKey" 
 
   $PathTemp = "$PathToModule\temp\$ModuleName"
-  mkdir $PathTemp
+  mkdir $PathTemp | Out-Null
   copy "$PathToModule\$ModuleName.psm1" $PathTemp
   copy "$PathToModule\$ModuleName.psd1" $PathTemp
-  Pause
-
+ 
   Publish-Module -Path $PathTemp -Repository $Repo -NuGetApiKey $NuGetApiKey
 
   Remove-Item -Path "$PathToModule\temp" -Recurse -Force
