@@ -371,6 +371,11 @@ function New-LabVmDifferencing {
      $VhdPath = Join-Path $VhdDir "$VmName.vhdx"
      New-Item -Path $VhdDir -ItemType Directory | Out-Null
      New-VHD -Path $VhdPath -Differencing -ParentPath $BaseVhd -SizeBytes 127GB | Out-Null
+     Mount-VHD -Path $VhdPath
+     $DriveLetter = Get-DiskImage -ImagePath $VhdPath | Get-Disk | Get-Partition | Get-Volume | ? FileSystemLabel -NE "Recovery" | % DriveLetter
+     $AnswerFile = $DriveLetter + ":\Windows\System32\Sysprep\CopyProfile_and_OOBE_and_Computername.xml"
+     (Get-Content $AnswerFile).Replace('<ComputerName>MyComputer</ComputerName>','<ComputerName>' + $VmComp + '</ComputerName>') | Set-Content $AnswerFile
+     Dismount-VHD -Path $VhdPath
      New-VM -Name $VmName -Generation 2 -Path $Dir -VHDPath $VhdPath -MemoryStartupBytes $Mem -SwitchName $Switch -Version $Version | Out-Null
      Set-VM -Name $VmName -ProcessorCount $Count
    }
