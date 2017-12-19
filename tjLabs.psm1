@@ -348,7 +348,7 @@ function New-LabVm {
      New-VM -Name $VmName -Generation 2 -Path $Dir -VHDPath $VhdPath -MemoryStartupBytes $Mem -SwitchName $Switch -Version $Version | Out-Null
      Set-VM -Name $VmName -ProcessorCount $Count
    }
-}
+  }
   End {}
 }
 function New-LabVmDifferencing {
@@ -372,8 +372,9 @@ function New-LabVmDifferencing {
      New-Item -Path $VhdDir -ItemType Directory | Out-Null
      New-VHD -Path $VhdPath -Differencing -ParentPath $BaseVhd -SizeBytes 127GB | Out-Null
      Mount-VHD -Path $VhdPath
-     $DriveLetter = Get-DiskImage -ImagePath $VhdPath | Get-Disk | Get-Partition | Get-Volume | ? FileSystemLabel -NE "Recovery" | % DriveLetter
-     $AnswerFile = $DriveLetter -join ":\Windows\Panther\unattend.xml"
+     $DriveLetter = Get-DiskImage -ImagePath $VhdPath | Get-Disk | Get-Partition | Get-Volume | 
+        Where-Object FileSystemLabel -NE "Recovery" | Select-Object -ExpandProperty DriveLetter
+     $AnswerFile = $DriveLetter + ":\Windows\Panther\unattend.xml"
      (Get-Content $AnswerFile).Replace('<ComputerName>MyComputer</ComputerName>','<ComputerName>' + $VmComp + '</ComputerName>') | Set-Content $AnswerFile
      Dismount-VHD -Path $VhdPath
      New-VM -Name $VmName -Generation 2 -Path $Dir -VHDPath $VhdPath -MemoryStartupBytes $Mem -SwitchName $Switch -Version $Version | Out-Null
@@ -402,10 +403,16 @@ function New-LabVmCopying {
      $VhdPath = Join-Path $VhdDir "$VmName.vhdx"
      New-Item -Path $VhdDir -ItemType Directory | Out-Null
      Copy-Item -Path $BaseVhd -Destination $VhdPath
+     Mount-VHD -Path $VhdPath
+     $DriveLetter = Get-DiskImage -ImagePath $VhdPath | Get-Disk | Get-Partition | Get-Volume | 
+        Where-Object FileSystemLabel -NE "Recovery" | Select-Object -ExpandProperty DriveLetter
+     $AnswerFile = $DriveLetter + ":\Windows\Panther\unattend.xml"
+     (Get-Content $AnswerFile).Replace('<ComputerName>MyComputer</ComputerName>','<ComputerName>' + $VmComp + '</ComputerName>') | Set-Content $AnswerFile
+     Dismount-VHD -Path $VhdPath
      New-VM -Name $VmName -Generation 2 -Path $Dir -VHDPath $VhdPath -MemoryStartupBytes $Mem -SwitchName $Switch -Version $Version | Out-Null
      Set-VM -Name $VmName -ProcessorCount $Count
    }
-}
+  }
   End {}
 }
 
