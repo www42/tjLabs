@@ -422,6 +422,9 @@ Get-Lab -Lab $Lab | foreach {
      Remove-LabVm -VmComputerName $VmComputerName -Lab $Lab
      }
 
+# wait to get the dir empty
+Start-Sleep -Seconds 5
+
 # remove LabDir
 if (Test-Path -Path $Dir) { rmdir $Dir -Force }
 else {Write-Output $('$LabDir  ' + $Dir + '  does not exist. Nothing to do.')} 
