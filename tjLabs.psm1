@@ -16,19 +16,26 @@ function ConvertTo-VmName {
 
 function New-Lab {
   [CmdletBinding()]Param(
-  [Parameter(Mandatory=$false,Position=1)][string]$Dir    = $Global:LabDir,
-  [Parameter(Mandatory=$false,Position=2)][string]$Switch = $Global:LabSwitch
+  [Parameter(Mandatory=$true, Position=1)][string]$Lab,
+  [Parameter(Mandatory=$true, Position=2)][string]$IpHost,
+  [Parameter(Mandatory=$false,Position=3)][string]$IpHostPrefixLength = $Global:LabIpPrefixLength,
+  [Parameter(Mandatory=$false,Position=4)][string]$Dir = $Global:LabDir,
+  [Parameter(Mandatory=$false,Position=5)][string]$Switch = $Global:LabSwitch
   )
 # create LabDir
 if (Test-Path -Path $Dir){Write-Output $('$LabDir  ' + $Dir + '  already exists. Nothing to do.')}
-else { mkdir $Dir }
+else { mkdir $Dir | Out-Null }
 
 # create LabSwitch
 if (Get-VMSwitch -Name $Switch -ErrorAction SilentlyContinue) {Write-Output $('$LabSwitch  ' + $Switch + '  already exists. Nothing to do.')}
-else { New-VMSwitch -Name $Switch -SwitchType Internal }
+else { New-VMSwitch -Name $Switch -SwitchType Internal | Out-Null }
+
+# configure ip address management os
+$NetAdapter = Get-NetAdapter -Name "vEthernet ($Switch)"
+New-NetIPAddress -IPAddress $IpHost -PrefixLength $IpHostPrefixLength -InterfaceAlias $NetAdapter.InterfaceAlias | Out-Null
 
 # create LabRouter
- # todo
+New-LabRouter -Lab $Lab -VmComputerName "R1"
 }
 
 function Get-LabVm {
@@ -528,13 +535,16 @@ function New-LabRouter {
   Start-LabVm $VmComputerName
   Connect-LabVm $VmComputerName
   
-  Write-Host -ForegroundColor Yellow '---------------------------'
-  Write-Host -ForegroundColor Yellow '  login:    vyos'
-  Write-Host -ForegroundColor Yellow '  Password: Pa55w.rd'
-  Write-Host -ForegroundColor Yellow ''
-  Write-Host -ForegroundColor Yellow '  vi /config/config.boot'
-  Write-Host -ForegroundColor Yellow '  :wq'
-  Write-Host -ForegroundColor Yellow ''
-  Write-Host -ForegroundColor Yellow '  reboot now'
-  Write-Host -ForegroundColor Yellow '---------------------------'
+  Write-Host -ForegroundColor Yellow ' -----------------------------'
+  Write-Host -ForegroundColor Yellow '| Please cofigure the Router  |'
+  Write-Host -ForegroundColor Yellow '| --------------------------  |'
+  Write-Host -ForegroundColor Yellow '|                             |'
+  Write-Host -ForegroundColor Yellow '|  login:    vyos             |'
+  Write-Host -ForegroundColor Yellow '|  Password: Pa55w.rd         |'
+  Write-Host -ForegroundColor Yellow '|                             |'
+  Write-Host -ForegroundColor Yellow '|  vi /config/config.boot     |'
+  Write-Host -ForegroundColor Yellow '|  :wq                        |'
+  Write-Host -ForegroundColor Yellow '|                             |'
+  Write-Host -ForegroundColor Yellow '|  reboot now                 |'
+  Write-Host -ForegroundColor Yellow ' ----------------------------- '
 }
