@@ -1,31 +1,4 @@
-﻿function PublishToMyGet-Module {
-  [CmdletBinding()]Param(
-  [Parameter(Mandatory=$true,Position=1)][string]$ModuleName
-  )
-
-  Get-PSRepository | ft Name,SourceLocation,PublishLocation
-  
-  $PathDefault = "C:\Git\$ModuleName"
-  [string]$PathToModule = Read-Host -Prompt "Path to module  [$PathDefault]"
-  if ([string]::IsNullOrEmpty($PathToModule)) {$PathToModule = $PathDefault}
-
-  $RepoDefault = "MyGet"
-  [string]$Repo = Read-Host -Prompt "Repo  [$RepoDefault]"
-  if ([string]::IsNullOrEmpty($Repo)) {$Repo = $RepoDefault}
-
-  $NuGetApiKey = Read-Host -Prompt "NuGetApiKey" 
-
-  $PathTemp = "$PathToModule\temp\$ModuleName"
-  mkdir $PathTemp | Out-Null
-  copy "$PathToModule\$ModuleName.psm1" $PathTemp
-  copy "$PathToModule\$ModuleName.psd1" $PathTemp
- 
-  Publish-Module -Path $PathTemp -Repository $Repo -NuGetApiKey $NuGetApiKey
-
-  Remove-Item -Path "$PathToModule\temp" -Recurse -Force
-}
-
-function ConvertTo-VmComputerName {
+﻿function ConvertTo-VmComputerName {
   [CmdletBinding()]Param(
   [Parameter(Mandatory=$true,Position=1)][string]$VmName
   )
