@@ -430,8 +430,6 @@ else {Write-Output $('$LabDir  ' + $Dir + '  does not exist. Nothing to do.')}
 if (Get-VMSwitch -Name $Switch -ErrorAction SilentlyContinue) { Remove-VMSwitch -Name $Switch -Force }
 else {Write-Output $('$LabSwitch  ' + $Switch + '  does not exist. Nothing to do.')}
 
-# remove LabRouter
- # todo
 }
 
 function Connect-LabVm {
