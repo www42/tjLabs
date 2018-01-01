@@ -446,7 +446,7 @@ function Remove-Lab {
 Get-Lab -Lab $Lab | foreach {
      $VmName = $_.Name
      $VmComputerName = ConvertTo-VmComputerName -VmName $VmName
-     Revert-LabVm -VmComputerName $VmComputerName -Lab $Lab
+     Remove-LabVm -VmComputerName $VmComputerName -Lab $Lab
      }
 
 # remove LabDir
