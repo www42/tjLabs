@@ -34,6 +34,10 @@ else { New-VMSwitch -Name $Switch -SwitchType Internal | Out-Null }
 $NetAdapter = Get-NetAdapter -Name "vEthernet ($Switch)"
 New-NetIPAddress -IPAddress $IpHost -PrefixLength $IpHostPrefixLength -InterfaceAlias $NetAdapter.InterfaceAlias | Out-Null
 
+# create External Switch
+$NetAdapter = Get-NetAdapter -Physical | Where-Object Status -EQ "Up"
+New-VMSwitch -Name "External Network" -NetAdapterName $NetAdapter.Name
+
 # create LabRouter
 New-LabRouter -Lab $Lab -ComputerName "R1"
 }
