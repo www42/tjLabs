@@ -4,17 +4,17 @@ $LabSwitch = "External Network"
 $Iso = "C:\iso\14393.0.161119-1705.RS1_REFRESH_SERVER_EVAL_X64FRE_EN-US.ISO"
 
 #----------------------------------------------------------------
-$ComputerName = "WS2016_DesktopExperience_withUpdates1712_en-US"
+$ComputerName = "WS2016_DesktopExperience_withUpdates1801_en-US"
 #----------------------------------------------------------------
 
-New-LabVm -VmComputerName $ComputerName -Lab $Lab -Dir $LabDir -Switch $LabSwitch
+New-LabVm -ComputerName $ComputerName -Lab $Lab -Dir $LabDir -Switch $LabSwitch
 
 $VmName = "$Lab-$ComputerName"
 Add-VMDvdDrive -VMName $VmName
 Set-VMDvdDrive -VMName $VmName -Path $Iso
 Set-VMFirmware -VMName $VmName -FirstBootDevice (Get-VMDvdDrive -VMName $VmName)
 
-Connect-LabVm -VmComputerName $ComputerName
+Connect-LabVm -ComputerName $ComputerName
 
 # Install Windows Server manually
 
