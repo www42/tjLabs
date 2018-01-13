@@ -359,6 +359,7 @@ function New-LabVmDifferencing {
      $DriveLetter = Get-DiskImage -ImagePath $VhdPath | Get-Disk | Get-Partition | Get-Volume | 
         Where-Object FileSystemLabel -NE "Recovery" | Select-Object -ExpandProperty DriveLetter
      $AnswerFile = $DriveLetter + ":\Windows\Panther\unattend.xml"
+     Start-Sleep -Seconds 3
      (Get-Content $AnswerFile).Replace('<ComputerName>MyComputer</ComputerName>','<ComputerName>' + $Comp + '</ComputerName>') | Set-Content $AnswerFile
      Dismount-VHD -Path $VhdPath
      New-VM -Name $VmName -Generation 2 -Path $Dir -VHDPath $VhdPath -MemoryStartupBytes $Mem -SwitchName $Switch -Version $Version | Out-Null
@@ -391,6 +392,7 @@ function New-LabVmCopying {
      $DriveLetter = Get-DiskImage -ImagePath $VhdPath | Get-Disk | Get-Partition | Get-Volume | 
         Where-Object FileSystemLabel -NE "Recovery" | Select-Object -ExpandProperty DriveLetter
      $AnswerFile = $DriveLetter + ":\Windows\Panther\unattend.xml"
+     Start-Sleep -Seconds 3
      (Get-Content $AnswerFile).Replace('<ComputerName>MyComputer</ComputerName>','<ComputerName>' + $Comp + '</ComputerName>') | Set-Content $AnswerFile
      Dismount-VHD -Path $VhdPath
      New-VM -Name $VmName -Generation 2 -Path $Dir -VHDPath $VhdPath -MemoryStartupBytes $Mem -SwitchName $Switch -Version $Version | Out-Null
