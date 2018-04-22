@@ -4,7 +4,7 @@ $LabSwitch = "External Network"
 $Iso = "C:\iso\14393.0.161119-1705.RS1_REFRESH_SERVER_EVAL_X64FRE_EN-US.ISO"
 
 #----------------------------------------------------------------
-$ComputerName = "WS2016_DesktopExperience_withUpdates1801_en-US"
+$ComputerName = "WS2016_DesktopExperience_withUpdates1804_en-US"
 #----------------------------------------------------------------
 
 New-LabVm -ComputerName $ComputerName -Lab $Lab -Dir $LabDir -Switch $LabSwitch
@@ -38,7 +38,7 @@ Connect-LabVm -ComputerName $ComputerName
 #   Copy BackInfo\ to C:\Program Files (x86)\
 #   BackInfo.exe  shortcut --> shell:common startup
 
-# ZoomIt.exe  --> Documents
+# ZoomIt.exe  --> C:\Windows\System32
 # 
 
 # Server Manager:
