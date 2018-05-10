@@ -355,14 +355,8 @@ function New-LabVmDifferencing {
      $VhdPath = Join-Path $VhdDir "$VmName.vhdx"
      New-Item -Path $VhdDir -ItemType Directory | Out-Null
      New-VHD -Path $VhdPath -Differencing -ParentPath $BaseVhd -SizeBytes 127GB | Out-Null
-     Mount-VHD -Path $VhdPath
-     $DriveLetter = Get-DiskImage -ImagePath $VhdPath | Get-Disk | Get-Partition | Get-Volume | 
-        Where-Object FileSystemLabel -NE "Recovery" | Select-Object -ExpandProperty DriveLetter
+     $DriveLetter = Mount-VHD -Path $VhdPath -Passthru | Get-Disk | Get-Partition | ? Type -EQ "Basic" | % DriveLetter 
      $AnswerFile = $DriveLetter + ":\Windows\Panther\unattend.xml"
-     Start-Sleep -Seconds 3
-     Get-Content $AnswerFile | Out-Null
-     Get-Volume
-     Get-Content $AnswerFile
      (Get-Content $AnswerFile).Replace('<ComputerName>MyComputer</ComputerName>','<ComputerName>' + $Comp + '</ComputerName>') | Set-Content $AnswerFile
      Dismount-VHD -Path $VhdPath
      New-VM -Name $VmName -Generation 2 -Path $Dir -VHDPath $VhdPath -MemoryStartupBytes $Mem -SwitchName $Switch -Version $Version | Out-Null
@@ -391,11 +385,8 @@ function New-LabVmCopying {
      $VhdPath = Join-Path $VhdDir "$VmName.vhdx"
      New-Item -Path $VhdDir -ItemType Directory | Out-Null
      Copy-Item -Path $BaseVhd -Destination $VhdPath
-     Mount-VHD -Path $VhdPath
-     $DriveLetter = Get-DiskImage -ImagePath $VhdPath | Get-Disk | Get-Partition | Get-Volume | 
-        Where-Object FileSystemLabel -NE "Recovery" | Select-Object -ExpandProperty DriveLetter
+     $DriveLetter = Mount-VHD -Path $VhdPath -Passthru | Get-Disk | Get-Partition | ? Type -EQ "Basic" | % DriveLetter 
      $AnswerFile = $DriveLetter + ":\Windows\Panther\unattend.xml"
-     Start-Sleep -Seconds 3
      (Get-Content $AnswerFile).Replace('<ComputerName>MyComputer</ComputerName>','<ComputerName>' + $Comp + '</ComputerName>') | Set-Content $AnswerFile
      Dismount-VHD -Path $VhdPath
      New-VM -Name $VmName -Generation 2 -Path $Dir -VHDPath $VhdPath -MemoryStartupBytes $Mem -SwitchName $Switch -Version $Version | Out-Null

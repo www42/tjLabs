@@ -4,7 +4,7 @@ $LabSwitch = "External Network"
 $Iso = "C:\iso\14393.0.161119-1705.RS1_REFRESH_SERVER_EVAL_X64FRE_EN-US.ISO"
 
 #----------------------------------------------------------------
-$ComputerName = "WS2016_DesktopExperience_withUpdates1804_en-US"
+$ComputerName = "WS2016_DesktopExperience_withUpdates1805_en-US"
 #----------------------------------------------------------------
 
 New-LabVm -ComputerName $ComputerName -Lab $Lab -Dir $LabDir -Switch $LabSwitch
@@ -17,6 +17,12 @@ Set-VMFirmware -VMName $VmName -FirstBootDevice (Get-VMDvdDrive -VMName $VmName)
 Connect-LabVm -ComputerName $ComputerName
 
 # Install Windows Server manually
+
+# Server Manager:
+#   Local Server
+#      IE Enhanced Security Configuration: Off (administrators) Off (Users)
+#
+#   Do not start Server Manager automatically: Check
 
 # Powershell:
 #   Update-Help
@@ -41,20 +47,14 @@ Connect-LabVm -ComputerName $ComputerName
 # ZoomIt.exe  --> C:\Windows\System32
 # 
 
-# Server Manager:
-#   Local Server
-#      IE Enhanced Security Configuration: Off (administrators) Off (Users)
-#
-#   Do not start Server Manager automatically: Check
-
 # IE:
 #   Add Google
 #   Set Google default
 #   Remove Bing
 
-# Sounds:
-#   No sounds
-#
+# funktioniert nicht # Sounds:
+# funktioniert nicht #   No sounds
+# funktioniert nicht #
 
 # Settings (Win-I):
 #   System
