@@ -355,13 +355,12 @@ function New-LabVmDifferencing {
      $VhdPath = Join-Path $VhdDir "$VmName.vhdx"
      New-Item -Path $VhdDir -ItemType Directory | Out-Null
      New-VHD -Path $VhdPath -Differencing -ParentPath $BaseVhd -SizeBytes 127GB | Out-Null
-
-# The following does not work (Why?)
-#
-#     $DriveLetter = Mount-VHD -Path $VhdPath -Passthru | Get-Disk | Get-Partition | ? Type -EQ "Basic" | % DriveLetter 
-#     $AnswerFile = $DriveLetter + ":\Windows\Panther\unattend.xml"
-#     (Get-Content $AnswerFile).Replace('<ComputerName>MyComputer</ComputerName>','<ComputerName>' + $Comp + '</ComputerName>') | Set-Content $AnswerFile
-#     Dismount-VHD -Path $VhdPath
+     Mount-VHD -Path $VhdPath
+     $DriveLetter =  Get-DiskImage -ImagePath $VhdPath | Get-Disk | Get-Partition | where Type -EQ "Basic" | % DriveLetter 
+     $DriveLetterString = ($DriveLetter).ToString()
+     $AnswerFile = $DriveLetterString  + ":\Windows\Panther\unattend.xml"
+     (Get-Content $AnswerFile).Replace('<ComputerName>MyComputer</ComputerName>','<ComputerName>' + $Comp + '</ComputerName>') | Set-Content $AnswerFile
+     Dismount-VHD -Path $VhdPath
      New-VM -Name $VmName -Generation 2 -Path $Dir -VHDPath $VhdPath -MemoryStartupBytes $Mem -SwitchName $Switch -Version $Version | Out-Null
      Set-VM -Name $VmName -ProcessorCount $Count
    }
