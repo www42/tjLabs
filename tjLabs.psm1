@@ -360,6 +360,7 @@ function New-LabVmDifferencing {
      $DriveLetterString = ($DriveLetter).ToString()
      $AnswerFile = $DriveLetterString  + ":\Windows\Panther\unattend.xml"
      (Get-Content $AnswerFile).Replace('<ComputerName>MyComputer</ComputerName>','<ComputerName>' + $Comp + '</ComputerName>') | Set-Content $AnswerFile
+     Start-Sleep -Seconds 10
      Dismount-VHD -Path $VhdPath
      New-VM -Name $VmName -Generation 2 -Path $Dir -VHDPath $VhdPath -MemoryStartupBytes $Mem -SwitchName $Switch -Version $Version | Out-Null
      Set-VM -Name $VmName -ProcessorCount $Count
