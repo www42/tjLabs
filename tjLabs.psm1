@@ -22,38 +22,38 @@ function New-Lab {
   [Parameter(Mandatory=$false,Position=4)][string]$Dir = $Global:LabDir,
   [Parameter(Mandatory=$false,Position=5)][string]$Switch = $Global:LabSwitch
   )
-# create LabDir
-if (Test-Path -Path $Dir){Write-Output $('$LabDir  ' + $Dir + '  already exists. Nothing to do.')}
-else { mkdir $Dir | Out-Null }
+  # create LabDir
+  if (Test-Path -Path $Dir){Write-Output $('$LabDir  ' + $Dir + '  already exists. Nothing to do.')}
+  else { mkdir $Dir | Out-Null }
 
-# create LabSwitch
-if (Get-VMSwitch -Name $Switch -ErrorAction SilentlyContinue) {Write-Output $('$LabSwitch  ' + $Switch + '  already exists. Nothing to do.')}
-else { New-VMSwitch -Name $Switch -SwitchType Internal | Out-Null }
+  # create LabSwitch
+  if (Get-VMSwitch -Name $Switch -ErrorAction SilentlyContinue) {Write-Output $('$LabSwitch  ' + $Switch + '  already exists. Nothing to do.')}
+  else { New-VMSwitch -Name $Switch -SwitchType Internal | Out-Null }
 
-# configure ip address management os
-$NetAdapter = Get-NetAdapter -Name "vEthernet ($Switch)"
-New-NetIPAddress -IPAddress $IpHost -PrefixLength $IpHostPrefixLength -InterfaceAlias $NetAdapter.InterfaceAlias | Out-Null
+  # configure ip address management os
+  $NetAdapter = Get-NetAdapter -Name "vEthernet ($Switch)"
+  New-NetIPAddress -IPAddress $IpHost -PrefixLength $IpHostPrefixLength -InterfaceAlias $NetAdapter.InterfaceAlias | Out-Null
 
-# create External Switch
-$NetAdapter = Get-NetAdapter -Physical | Where-Object Status -EQ "Up"
-New-VMSwitch -Name "External Network" -NetAdapterName $NetAdapter.Name
+  # create External Switch
+  $NetAdapter = Get-NetAdapter -Physical | Where-Object Status -EQ "Up"
+  New-VMSwitch -Name "External Network" -NetAdapterName $NetAdapter.Name
 
-# create LabRouter
-New-LabRouter -Lab $Lab -ComputerName "R1"
+  # create LabRouter
+  New-LabRouter -Lab $Lab -ComputerName "R1"
 }
 
 function Get-LabVm {
-[CmdletBinding()]Param(
-[Parameter(Mandatory=$true, Position=1,ValueFromPipeline=$true,ValueFromPipelineByPropertyName=$true)][string[]]$ComputerName,
-[Parameter(Mandatory=$false,Position=2)][string]$Lab = $Global:Lab
-)
+  [CmdletBinding()]Param(
+  [Parameter(Mandatory=$true, Position=1,ValueFromPipeline=$true,ValueFromPipelineByPropertyName=$true)][string[]]$ComputerName,
+  [Parameter(Mandatory=$false,Position=2)][string]$Lab = $Global:Lab
+  )
   Begin {}
   Process {
-  foreach ($Comp in $ComputerName){
-    $VmName = ConvertTo-VmName -ComputerName $Comp -Lab $Lab
-    Get-VM -Name $VmName
+    foreach ($Comp in $ComputerName){
+      $VmName = ConvertTo-VmName -ComputerName $Comp -Lab $Lab
+      Get-VM -Name $VmName
+    }
   }
-}
   End {}
 }
 function Get-Lab {
