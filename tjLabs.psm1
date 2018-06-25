@@ -1,4 +1,19 @@
-﻿function ConvertTo-ComputerName {
+﻿function New-FooVm {
+  [CmdletBinding()]
+  param (
+    
+  )
+  
+  begin {
+  }
+  
+  process {
+  }
+  
+  end {
+  }
+}
+function ConvertTo-ComputerName {
   [CmdletBinding()]Param(
   [Parameter(Mandatory=$true,Position=1)][string]$VmName
   )
@@ -6,40 +21,40 @@
   Write-Output $ComputerName
 }
 function ConvertTo-VmName {
-  [CmdletBinding()]Param(
-  [Parameter(Mandatory=$true, Position=1)][string]$ComputerName,
-  [Parameter(Mandatory=$false,Position=2)][string]$Lab = $Global:Lab
-  )
-  $VmName = "$Lab-$ComputerName"
-  Write-Output $VmName
+    [CmdletBinding()]Param(
+        [Parameter(Mandatory = $true, Position = 1)][string]$ComputerName,
+        [Parameter(Mandatory = $false, Position = 2)][string]$Lab = $Global:Lab
+    )
+    $VmName = "$Lab-$ComputerName"
+    Write-Output $VmName
 }
 
 function New-Lab {
-  [CmdletBinding()]Param(
-  [Parameter(Mandatory=$true, Position=1)][string]$Lab,
-  [Parameter(Mandatory=$true, Position=2)][string]$IpHost,
-  [Parameter(Mandatory=$false,Position=3)][string]$IpHostPrefixLength = $Global:LabIpPrefixLength,
-  [Parameter(Mandatory=$false,Position=4)][string]$Dir = $Global:LabDir,
-  [Parameter(Mandatory=$false,Position=5)][string]$Switch = $Global:LabSwitch
-  )
-  # create LabDir
-  if (Test-Path -Path $Dir){Write-Output $('$LabDir  ' + $Dir + '  already exists. Nothing to do.')}
-  else { mkdir $Dir | Out-Null }
+    [CmdletBinding()]Param(
+        [Parameter(Mandatory = $true, Position = 1)][string]$Lab,
+        [Parameter(Mandatory = $true, Position = 2)][string]$IpHost,
+        [Parameter(Mandatory = $false, Position = 3)][string]$IpHostPrefixLength = $Global:LabIpPrefixLength,
+        [Parameter(Mandatory = $false, Position = 4)][string]$Dir = $Global:LabDir,
+        [Parameter(Mandatory = $false, Position = 5)][string]$Switch = $Global:LabSwitch
+    )
+    # create LabDir
+    if (Test-Path -Path $Dir) {Write-Output $('$LabDir  ' + $Dir + '  already exists. Nothing to do.')}
+    else { mkdir $Dir | Out-Null }
 
-  # create LabSwitch
-  if (Get-VMSwitch -Name $Switch -ErrorAction SilentlyContinue) {Write-Output $('$LabSwitch  ' + $Switch + '  already exists. Nothing to do.')}
-  else { New-VMSwitch -Name $Switch -SwitchType Internal | Out-Null }
+    # create LabSwitch
+    if (Get-VMSwitch -Name $Switch -ErrorAction SilentlyContinue) {Write-Output $('$LabSwitch  ' + $Switch + '  already exists. Nothing to do.')}
+    else { New-VMSwitch -Name $Switch -SwitchType Internal | Out-Null }
 
-  # configure ip address management os
-  $NetAdapter = Get-NetAdapter -Name "vEthernet ($Switch)"
-  New-NetIPAddress -IPAddress $IpHost -PrefixLength $IpHostPrefixLength -InterfaceAlias $NetAdapter.InterfaceAlias | Out-Null
+    # configure ip address management os
+    $NetAdapter = Get-NetAdapter -Name "vEthernet ($Switch)"
+    New-NetIPAddress -IPAddress $IpHost -PrefixLength $IpHostPrefixLength -InterfaceAlias $NetAdapter.InterfaceAlias | Out-Null
 
-  # create External Switch
-  $NetAdapter = Get-NetAdapter -Physical | Where-Object Status -EQ "Up"
-  New-VMSwitch -Name "External Network" -NetAdapterName $NetAdapter.Name
+    # create External Switch
+    $NetAdapter = Get-NetAdapter -Physical | Where-Object Status -EQ "Up"
+    New-VMSwitch -Name "External Network" -NetAdapterName $NetAdapter.Name
 
-  # create LabRouter
-  New-LabRouter -Lab $Lab -ComputerName "R1"
+    # create LabRouter
+    New-LabRouter -Lab $Lab -ComputerName "R1"
 }
 
 function Get-LabVm {
@@ -58,15 +73,15 @@ function Get-LabVm {
 }
 function Get-Lab {
   <#
-.SYNOPSIS
+  .SYNOPSIS
 	List all virtual machines of a Lab.
-.DESCRIPTION
+  .DESCRIPTION
 	List all virtual machines of a Lab.
-.PARAMETER Lab
+  .PARAMETER Lab
 	The name of the Lab.
-.EXAMPLE
+  .EXAMPLE
 	Get-Lab -Lab 21410D
-#>
+  #>
   [CmdletBinding()]Param(
   [Parameter(Mandatory=$false,Position=1)][string]$Lab=$Global:Lab
   )
@@ -81,12 +96,12 @@ function Get-Lab {
 
 function Show-LabVm {
   [CmdletBinding()]Param (
-[Parameter(Mandatory=$true,Position=1,ValueFromPipeline=$true,ValueFromPipelineByPropertyName=$true)][string[]]$ComputerName,
-[Parameter(Mandatory=$false,Position=2)][string]$Lab = $Global:Lab
-)
+  [Parameter(Mandatory=$true,Position=1,ValueFromPipeline=$true,ValueFromPipelineByPropertyName=$true)][string[]]$ComputerName,
+  [Parameter(Mandatory=$false,Position=2)][string]$Lab = $Global:Lab
+  )
   Begin {}
   Process {
-Get-LabVm -ComputerName $ComputerName -Lab $Lab |
+  Get-LabVm -ComputerName $ComputerName -Lab $Lab |
     Sort-Object -Property name |
     Format-Table -AutoSize `
                 -Property name,`
@@ -97,20 +112,20 @@ Get-LabVm -ComputerName $ComputerName -Lab $Lab |
                           @{e={$_.processorcount};l="CPUs"},`
                           @{e={($_.networkadapters).switchname};l="Switch"},`
                           @{e={($_.networkadapters).ipaddresses| foreach {if ($_ -notlike "fe80*") {$_}}};l="IP Addresses"}
-}
+  }
   End {}
 }
 function Show-Lab {
   <#
-.SYNOPSIS
+  .SYNOPSIS
 	List all virtual machines of a Lab.
-.DESCRIPTION
+  .DESCRIPTION
 	List all virtual machines of a Lab.
-.PARAMETER Lab
+  .PARAMETER Lab
 	The name of the Lab.
-.EXAMPLE
+  .EXAMPLE
 	Get-Lab -Lab 21410D
-#>
+  #>
   [CmdletBinding()]Param(
   [Parameter(Mandatory=$false,Position=1)][string]$Lab=$Global:Lab
   )
@@ -121,168 +136,174 @@ function Show-Lab {
   
   Show-LabVm -ComputerName '*' -Lab $Lab
 }
+
 New-Alias -Name shl -Value Show-Lab
 
 function Start-LabVm {
-  <#
-.SYNOPSIS
+    <#
+  .SYNOPSIS
 	Starts a virtual machine.
-.DESCRIPTION
+  .DESCRIPTION
 		Starts a virtual machine.
-.PARAMETER ComputerName
+  .PARAMETER ComputerName
 	The computer name inside the virtual machine.
-.PARAMETER Lab
+  .PARAMETER Lab
 	The name of the lab. A lab is a collection of Virtual machines starting with the same prefix.
-.EXAMPLE
+  .EXAMPLE
 	Start-LabVm -ComputerName LON-DC1 -Lab 21410D
-#>
-  [CmdletBinding()]Param (
-  [Parameter(Mandatory=$true, Position=1,ValueFromPipeline=$true,ValueFromPipelineByPropertyName=$true)][string[]]$ComputerName,
-  [Parameter(Mandatory=$false,Position=2)][string]$Lab = $Global:Lab
-  )
-  Begin {}
-  Process {
-  foreach ($Comp in $ComputerName){
-    $VmName = ConvertTo-VmName -ComputerName $Comp -Lab $Lab
-    Start-VM -Name $VmName 
-  }
+  #>
+    [CmdletBinding()]Param (
+        [Parameter(Mandatory = $true, Position = 1, ValueFromPipeline = $true, ValueFromPipelineByPropertyName = $true)][string[]]$ComputerName,
+        [Parameter(Mandatory = $false, Position = 2)][string]$Lab = $Global:Lab
+    )
+    Begin {}
+    Process {
+        foreach ($Comp in $ComputerName) {
+            $VmName = ConvertTo-VmName -ComputerName $Comp -Lab $Lab
+            Start-VM -Name $VmName 
+        }
+    }
+    End {}
 }
-  End {}
-}
+
 # There is no "Start-Lab" by intention.
 
 function Stop-LabVm {
-  <#
-.SYNOPSIS
+    <#
+  .SYNOPSIS
 	Stops a virtual machine.
-.DESCRIPTION
+  .DESCRIPTION
 		Stops a virtual machine.
-.PARAMETER ComputerName
+  .PARAMETER ComputerName
 	The computer name inside the virtual machine.
-.PARAMETER Lab
+  .PARAMETER Lab
 	The name of the lab. A lab is a collection of Virtual machines starting with the same prefix.
-.EXAMPLE
+  .EXAMPLE
 	Stop-LabVm -ComputerName LON-DC1 -Lab 21410D
-#>
-  [CmdletBinding()]Param (
-[Parameter(Mandatory=$true, Position=1,ValueFromPipeline=$true,ValueFromPipelineByPropertyName=$true)][string[]]$ComputerName,
-[Parameter(Mandatory=$false,Position=2)][string]$Lab = $Global:Lab
-)
-  Begin {}
-  Process {
-  foreach ($Comp in $ComputerName){  
-    $VmName = ConvertTo-VmName -ComputerName $Comp -Lab $Lab
-    Stop-VM -Name $VmName
-  }
-}
-  End {}
-}
-function Stop-Lab {
-  <#
-.SYNOPSIS
-	Stops all running virtual machines of a Lab.
-.DESCRIPTION
-	Stops all running virtual machines of a Lab.
-.PARAMETER Lab
-	The name of the Lab.
-.EXAMPLE
-	Stop-Lab -Lab 21410D
-#>
-  [CmdletBinding()]Param(
-[Parameter(Mandatory=$false,Position=1)][string]$Lab=$Global:Lab
-)
-  Get-Lab -Lab $Lab | where state -EQ "Running" | 
-      foreach {
-       $VmName = $_.Name
-       $ComputerName = ConvertTo-ComputerName -VmName $VmName
-       Stop-LabVm -ComputerName $ComputerName -Lab $Lab
+  #>
+    [CmdletBinding()]Param (
+        [Parameter(Mandatory = $true, Position = 1, ValueFromPipeline = $true, ValueFromPipelineByPropertyName = $true)][string[]]$ComputerName,
+        [Parameter(Mandatory = $false, Position = 2)][string]$Lab = $Global:Lab
+    )
+    Begin {}
+    Process {
+        foreach ($Comp in $ComputerName) {  
+            $VmName = ConvertTo-VmName -ComputerName $Comp -Lab $Lab
+            Stop-VM -Name $VmName
+        }
     }
+    End {}
+}
+
+function Stop-Lab {
+    <#
+  .SYNOPSIS
+  	Stops all running virtual machines of a Lab.
+  .DESCRIPTION
+  	Stops all running virtual machines of a Lab.
+  .PARAMETER Lab
+  	The name of the Lab.
+  .EXAMPLE
+  	Stop-Lab -Lab 21410D
+  #>
+    [CmdletBinding()]Param(
+  [Parameter(Mandatory=$false,Position=1)][string]$Lab=$Global:Lab
+  )
+    Get-Lab -Lab $Lab | where state -EQ "Running" | 
+        foreach {
+         $VmName = $_.Name
+         $ComputerName = ConvertTo-ComputerName -VmName $VmName
+         Stop-LabVm -ComputerName $ComputerName -Lab $Lab
+      }
 }
 
 function Checkpoint-LabVm {
-  [CmdletBinding()]Param (
-  [Parameter(Mandatory=$true, Position=1,ValueFromPipeline=$true,ValueFromPipelineByPropertyName=$true)][string[]]$ComputerName,
-  [Parameter(Mandatory=$true ,Position=2)][string]$Description,
-  [Parameter(Mandatory=$false,Position=3)][string]$Lab = $Global:Lab
-  )
-  Begin {
-#$De = New-Object -TypeName System.Globalization.CultureInfo("de-DE")
-#$Datum = Get-Date -Format ($De.DateTimeFormat.FullDateTimePattern)
-#$SnapshotName = "$Description - $Datum"
-$SnapshotName = $Description
+    [CmdletBinding()]Param (
+        [Parameter(Mandatory = $true, Position = 1, ValueFromPipeline = $true, ValueFromPipelineByPropertyName = $true)][string[]]$ComputerName,
+        [Parameter(Mandatory = $true , Position = 2)][string]$Description,
+        [Parameter(Mandatory = $false, Position = 3)][string]$Lab = $Global:Lab
+    )
+    Begin {
+        #$De = New-Object -TypeName System.Globalization.CultureInfo("de-DE")
+        #$Datum = Get-Date -Format ($De.DateTimeFormat.FullDateTimePattern)
+        #$SnapshotName = "$Description - $Datum"
+        $SnapshotName = $Description
+    }
+    Process {
+        foreach ($Comp in $ComputerName) {  
+            $VmName = ConvertTo-VmName -ComputerName $Comp -Lab $Lab
+            Checkpoint-VM -Name $VmName -SnapshotName $SnapshotName
+        }
+    }
+    End {}
 }
-  Process {
-  foreach ($Comp in $ComputerName){  
-    $VmName = ConvertTo-VmName -ComputerName $Comp -Lab $Lab
-    Checkpoint-VM -Name $VmName -SnapshotName $SnapshotName
-  }
-}
-  End {}
-}
+
 function Checkpoint-Lab {
   [CmdletBinding()]Param(
-[Parameter(Mandatory=$true, Position=1)][string]$Description,
-[Parameter(Mandatory=$false,Position=2)][string]$Lab = $Global:Lab
-)
-  Get-Lab -Lab $Lab |
-      foreach {
-      $VmName = $_.Name
-      $ComputerName = ConvertTo-ComputerName -VmName $VmName
-      Checkpoint-LabVm -ComputerName $ComputerName -Description $Description -Lab $Lab
-    }
+  [Parameter(Mandatory=$true, Position=1)][string]$Description,
+  [Parameter(Mandatory=$false,Position=2)][string]$Lab = $Global:Lab
+  )
+    Get-Lab -Lab $Lab |
+        foreach {
+        $VmName = $_.Name
+        $ComputerName = ConvertTo-ComputerName -VmName $VmName
+        Checkpoint-LabVm -ComputerName $ComputerName -Description $Description -Lab $Lab
+      }
 }
 
 function New-LabVmGen1 {
-  [CmdletBinding()]Param(
-  [Parameter(Mandatory=$true, Position=1,ValueFromPipeline=$true)][string[]]$ComputerName,
-  [Parameter(Mandatory=$false,Position=2)]                        [string]  $Lab      = $Global:Lab,    
-  [Parameter(Mandatory=$false,Position=3)]                        [string]  $Dir      = $Global:LabDir,
-  [Parameter(Mandatory=$false,Position=4)]                        [string]  $Switch   = $Global:LabSwitch,
-  [Parameter(Mandatory=$false,Position=5)]                        [long]    $Mem      = $Global:LabVmMem,
-  [Parameter(Mandatory=$false,Position=6)]                        [long]    $Count    = $Global:LabVmCpuCount,
-  [Parameter(Mandatory=$false,Position=7)]                        [string]  $Version  = $Global:LabVmVersion
-  )
-  Begin {}
-  Process {
-   foreach ($Comp in $ComputerName){
-     $VmName  = ConvertTo-VmName -ComputerName $Comp -Lab $Lab
-     $VmDir   = Join-Path $Dir $VmName
-     $VhdDir  = Join-Path $VmDir  "Virtual Hard Disks"
-     $VhdPath = Join-Path $VhdDir "$VmName.vhd"                    # vhd   (ohne x, da Generation 1)
-     New-Item -Path $VhdDir -ItemType Directory | Out-Null
-     New-VHD -Path $VhdPath -Dynamic -SizeBytes 127GB | Out-Null
-     New-VM -Name $VmName -Path $Dir -VHDPath $VhdPath -MemoryStartupBytes $Mem -SwitchName $Switch -Version $Version | Out-Null
-     Set-VM -Name $VmName -ProcessorCount $Count
+    [CmdletBinding()]Param(
+        [Parameter(Mandatory = $true, Position = 1, ValueFromPipeline = $true)][string[]]$ComputerName,
+        [Parameter(Mandatory = $false, Position = 2)]                        [string]  $Lab = $Global:Lab,    
+        [Parameter(Mandatory = $false, Position = 3)]                        [string]  $Dir = $Global:LabDir,
+        [Parameter(Mandatory = $false, Position = 4)]                        [string]  $Switch = $Global:LabSwitch,
+        [Parameter(Mandatory = $false, Position = 5)]                        [long]    $Mem = $Global:LabVmMem,
+        [Parameter(Mandatory = $false, Position = 6)]                        [long]    $Count = $Global:LabVmCpuCount,
+        [Parameter(Mandatory = $false, Position = 7)]                        [string]  $Version = $Global:LabVmVersion
+    )
+    Begin {}
+    Process {
+        foreach ($Comp in $ComputerName) {
+            $VmName = ConvertTo-VmName -ComputerName $Comp -Lab $Lab
+            $VmDir = Join-Path $Dir $VmName
+            $VhdDir = Join-Path $VmDir  "Virtual Hard Disks"
+            $VhdPath = Join-Path $VhdDir "$VmName.vhd"                    # vhd   (ohne x, da Generation 1)
+            New-Item -Path $VhdDir -ItemType Directory | Out-Null
+            New-VHD -Path $VhdPath -Dynamic -SizeBytes 127GB | Out-Null
+            New-VM -Name $VmName -Path $Dir -VHDPath $VhdPath -MemoryStartupBytes $Mem -SwitchName $Switch -Version $Version | Out-Null
+            Set-VM -Name $VmName -ProcessorCount $Count
+        }
     }
+    End {}
 }
-  End {}
-}
+
 function New-LabVmGen1Differencing {
-  [CmdletBinding()]Param(
-[Parameter(Mandatory=$true, Position=1,ValueFromPipeline=$true)][string[]]$ComputerName,
-[Parameter(Mandatory=$false,Position=2)]                        [string]  $Lab      = $Global:Lab,    
-[Parameter(Mandatory=$false,Position=3)]                        [string]  $Dir      = $Global:LabDir,
-[Parameter(Mandatory=$false,Position=4)]                        [string]  $Switch   = $Global:LabSwitch,
-[Parameter(Mandatory=$false,Position=5)]                        [long]    $Mem      = $Global:LabVmMem,
-[Parameter(Mandatory=$false,Position=6)]                        [long]    $Count    = $Global:LabVmCpuCount,
-[Parameter(Mandatory=$false,Position=7)]                        [string]  $Version  = $Global:LabVmVersion,
-[Parameter(Mandatory=$false,Position=8)]                        [string]  $BaseVhd  = $Global:LabBaseGen1
-)
-  Begin {}
-  Process {
-   foreach ($Comp in $ComputerName){
-     $VmName  = ConvertTo-VmName -ComputerName $Comp -Lab $Lab
-     $VmDir   = Join-Path $Dir $VmName
-     $VhdDir  = Join-Path $VmDir  "Virtual Hard Disks"
-     $VhdPath = Join-Path $VhdDir "$VmName.vhd"                    # vhd   (ohne x, da Generation 1)
-     New-Item -Path $VhdDir -ItemType Directory | Out-Null
-     New-VHD -Path $VhdPath -Differencing -ParentPath $BaseVhd -SizeBytes 0 | Out-Null
-     New-VM -Name $VmName -Path $Dir -VHDPath $VhdPath -MemoryStartupBytes $Mem -SwitchName $Switch -Version $Version | Out-Null
-     Set-VM -Name $VmName -ProcessorCount $Count
-   }
+    [CmdletBinding()]Param(
+        [Parameter(Mandatory = $true, Position = 1, ValueFromPipeline = $true)][string[]]$ComputerName,
+        [Parameter(Mandatory = $false, Position = 2)]                        [string]  $Lab = $Global:Lab,    
+        [Parameter(Mandatory = $false, Position = 3)]                        [string]  $Dir = $Global:LabDir,
+        [Parameter(Mandatory = $false, Position = 4)]                        [string]  $Switch = $Global:LabSwitch,
+        [Parameter(Mandatory = $false, Position = 5)]                        [long]    $Mem = $Global:LabVmMem,
+        [Parameter(Mandatory = $false, Position = 6)]                        [long]    $Count = $Global:LabVmCpuCount,
+        [Parameter(Mandatory = $false, Position = 7)]                        [string]  $Version = $Global:LabVmVersion,
+        [Parameter(Mandatory = $false, Position = 8)]                        [string]  $BaseVhd = $Global:LabBaseGen1
+    )
+    Begin {}
+    Process {
+        foreach ($Comp in $ComputerName) {
+            $VmName = ConvertTo-VmName -ComputerName $Comp -Lab $Lab
+            $VmDir = Join-Path $Dir $VmName
+            $VhdDir = Join-Path $VmDir  "Virtual Hard Disks"
+            $VhdPath = Join-Path $VhdDir "$VmName.vhd"                    # vhd   (ohne x, da Generation 1)
+            New-Item -Path $VhdDir -ItemType Directory | Out-Null
+            New-VHD -Path $VhdPath -Differencing -ParentPath $BaseVhd -SizeBytes 0 | Out-Null
+            New-VM -Name $VmName -Path $Dir -VHDPath $VhdPath -MemoryStartupBytes $Mem -SwitchName $Switch -Version $Version | Out-Null
+            Set-VM -Name $VmName -ProcessorCount $Count
+        }
+    }
+    End {}
 }
-  End {}
-}
+
 function New-LabVmGen1Copying {
   [CmdletBinding()]Param(
   [Parameter(Mandatory=$true, Position=1,ValueFromPipeline=$true)][string[]]$ComputerName,
@@ -305,8 +326,8 @@ function New-LabVmGen1Copying {
      Copy-Item -Path $BaseVhd -Destination $VhdPath
      New-VM -Name $VmName -Path $Dir -VHDPath $VhdPath -MemoryStartupBytes $Mem -SwitchName $Switch -Version $Version | Out-Null
      Set-VM -Name $VmName -ProcessorCount $Count
-   }
-}
+    }
+  }
   End {}
 }
 
@@ -389,12 +410,12 @@ function New-LabVmCopying {
      New-Item -Path $VhdDir -ItemType Directory | Out-Null
      Copy-Item -Path $BaseVhd -Destination $VhdPath
 
-# The following does not work (Why?)
-#
-#     $DriveLetter = Mount-VHD -Path $VhdPath -Passthru | Get-Disk | Get-Partition | ? Type -EQ "Basic" | % DriveLetter 
-#     $AnswerFile = $DriveLetter + ":\Windows\Panther\unattend.xml"
-#     (Get-Content $AnswerFile).Replace('<ComputerName>MyComputer</ComputerName>','<ComputerName>' + $Comp + '</ComputerName>') | Set-Content $AnswerFile
-#     Dismount-VHD -Path $VhdPath
+  # The following does not work (Why?)
+  #
+  #     $DriveLetter = Mount-VHD -Path $VhdPath -Passthru | Get-Disk | Get-Partition | ? Type -EQ "Basic" | % DriveLetter 
+  #     $AnswerFile = $DriveLetter + ":\Windows\Panther\unattend.xml"
+  #     (Get-Content $AnswerFile).Replace('<ComputerName>MyComputer</ComputerName>','<ComputerName>' + $Comp + '</ComputerName>') | Set-Content $AnswerFile
+  #     Dismount-VHD -Path $VhdPath
 
      $DriveLetter = Mount-VHD -Path $VhdPath -Passthru | Get-Disk | Get-Partition | ? Type -EQ "Basic" | % DriveLetter 
      $AnswerFile = $DriveLetter + ":\Windows\Panther\unattend.xml"
@@ -422,7 +443,7 @@ function Remove-LabVm {
      Remove-VM -Name $VmName -Force
      Remove-Item -Path $VmDir -Recurse -Force
    }
-}
+  }
   End {}
 }
 function Remove-Lab {
@@ -433,54 +454,53 @@ function Remove-Lab {
   [Parameter(Mandatory=$true,Position=3)][string]$Switch
   )
 
-# remove VMs
-Get-Lab -Lab $Lab | foreach {
+  # remove VMs
+  Get-Lab -Lab $Lab | foreach {
      $VmName = $_.Name
      $ComputerName = ConvertTo-ComputerName -VmName $VmName
      Remove-LabVm -ComputerName $ComputerName -Lab $Lab
      }
 
-# wait to get the dir empty
-Start-Sleep -Seconds 5
-
-# remove LabDir
-if (Test-Path -Path $Dir) { rmdir $Dir -Force }
-else {Write-Output $('$LabDir  ' + $Dir + '  does not exist. Nothing to do.')} 
-
-# remove LabSwitch
-if (Get-VMSwitch -Name $Switch -ErrorAction SilentlyContinue) { Remove-VMSwitch -Name $Switch -Force }
-else {Write-Output $('$LabSwitch  ' + $Switch + '  does not exist. Nothing to do.')}
-
+  # wait to get the dir empty
+  Start-Sleep -Seconds 5
+  
+  # remove LabDir
+  if (Test-Path -Path $Dir) { rmdir $Dir -Force }
+  else {Write-Output $('$LabDir  ' + $Dir + '  does not exist. Nothing to do.')} 
+  
+  # remove LabSwitch
+  if (Get-VMSwitch -Name $Switch -ErrorAction SilentlyContinue) { Remove-VMSwitch -Name $Switch -Force }
+  else {Write-Output $('$LabSwitch  ' + $Switch + '  does not exist. Nothing to do.')}
 }
 
 function Connect-LabVm {
   [CmdletBinding()]Param(
-[Parameter(Mandatory=$true, Position=1,ValueFromPipeline=$true,ValueFromPipelineByPropertyName=$true)][string[]]$ComputerName,
-[Parameter(Mandatory=$false,Position=2)][string]$Lab = $Global:Lab
-)
+  [Parameter(Mandatory=$true, Position=1,ValueFromPipeline=$true,ValueFromPipelineByPropertyName=$true)][string[]]$ComputerName,
+  [Parameter(Mandatory=$false,Position=2)][string]$Lab = $Global:Lab
+  )
   Begin {}
   Process {
    foreach ($Comp in $ComputerName){
      $VmName  = ConvertTo-VmName -ComputerName $Comp -Lab $Lab
      vmconnect.exe localhost $VmName
    }
-}
+  }
   End {}
 }
 
 function Revert-LabVm {
   <#
-.SYNOPSIS
+  .SYNOPSIS
 	Reverts a virtual machine to the latests snapshot.
-.DESCRIPTION
+  .DESCRIPTION
 	Reverts a virtual machine to the latests snapshot.
-.PARAMETER ComputerName
+  .PARAMETER ComputerName
 	The computer name inside the virtual machine.
-.PARAMETER Lab
+  .PARAMETER Lab
 	The name of the lab. A lab is a collection of Virtual machines starting with the same prefix.
-.EXAMPLE
+  .EXAMPLE
 	Revert-LabVm -ComputerName LON-DC1 -Lab 21410D
-#>
+  #>
   [CmdletBinding()]Param(
   [Parameter(Mandatory=$true, Position=1,ValueFromPipeline=$true,ValueFromPipelineByPropertyName=$true)][string[]]$ComputerName,
   [Parameter(Mandatory=$false,Position=2)][string]$Lab = $Global:Lab
@@ -499,7 +519,7 @@ function Revert-LabVm {
      else
         {Write-Warning "${VmName}: There is no snapshot."}   
    }
-}
+  }
   End {}
 }
 function Revert-Lab {
