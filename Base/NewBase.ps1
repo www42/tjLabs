@@ -1,10 +1,12 @@
 ﻿$Lab = "Base"
 $LabDir = "C:\Labs\Base"
 $LabSwitch = "External Network"
-$Iso = "C:\iso\14393.0.161119-1705.RS1_REFRESH_SERVER_EVAL_X64FRE_EN-US.ISO"
+#$Iso = "C:\iso\14393.0.161119-1705.RS1_REFRESH_SERVER_EVAL_X64FRE_EN-US.ISO"
+$Iso = "C:\iso\Windows_InsiderPreview_Server_vNext_en-us_17692___LTSC.iso"
 
 #----------------------------------------------------------------
-$ComputerName = "WS2016_DesktopExperience_withUpdates1805_en-US"
+#$ComputerName = "WS2016_DesktopExperience_withUpdates1806_en-US"
+$ComputerName = "Windows_InsiderPreview_Server_vNext_en-us_17692___LTSC"
 #----------------------------------------------------------------
 
 New-LabVm -ComputerName $ComputerName -Lab $Lab -Dir $LabDir -Switch $LabSwitch
@@ -41,8 +43,8 @@ Connect-LabVm -ComputerName $ComputerName
 #         Expand to open folder:               check
 #         Show all folders:                    check
 #
-#   Copy BackInfo\ to C:\Program Files (x86)\
-#   BackInfo.exe  shortcut --> shell:common startup
+#  Copy BackInfo\ to C:\Program Files (x86)\
+#  BackInfo.exe  shortcut --> shell:common startup
 
 # ZoomIt.exe  --> C:\Windows\System32
 # 
@@ -54,7 +56,8 @@ Connect-LabVm -ComputerName $ComputerName
 
 # funktioniert nicht # Sounds:
 # funktioniert nicht #   No sounds
-# funktioniert nicht #
+
+# funktioniert nicht # Select which icons appear on the taskbar: Volume off
 
 # Settings (Win-I):
 #   System
