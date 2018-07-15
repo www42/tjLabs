@@ -1,12 +1,12 @@
 ﻿$Lab = "Base"
 $LabDir = "C:\Labs\Base"
 $LabSwitch = "External Network"
-#$Iso = "C:\iso\14393.0.161119-1705.RS1_REFRESH_SERVER_EVAL_X64FRE_EN-US.ISO"
-$Iso = "C:\iso\Windows_InsiderPreview_Server_vNext_en-us_17692___LTSC.iso"
+$Iso = "C:\iso\14393.0.161119-1705.RS1_REFRESH_SERVER_EVAL_X64FRE_EN-US.ISO"
+#$Iso = "C:\iso\Windows_InsiderPreview_Server_vNext_en-us_17692___LTSC.iso"
 
 #----------------------------------------------------------------
-#$ComputerName = "WS2016_DesktopExperience_withUpdates1806_en-US"
-$ComputerName = "Windows_InsiderPreview_Server_vNext_en-us_17692___LTSC"
+$ComputerName = "WS2016_DesktopExperience_withUpdates1807_en-US"
+#$ComputerName = "Windows_InsiderPreview_Server_vNext_en-us_17692___LTSC"
 #----------------------------------------------------------------
 
 New-LabVm -ComputerName $ComputerName -Lab $Lab -Dir $LabDir -Switch $LabSwitch
@@ -72,8 +72,7 @@ Connect-LabVm -ComputerName $ComputerName
 
 # cmd as Administrator!!
 #
-# cd c:\windows\System32\Sysprep
-#
 # --------------------------------------------------------------------------------------------
+# cd c:\windows\System32\Sysprep
 # .\sysprep /generalize /oobe /shutdown /unattend:.\CopyProfile_and_OOBE_and_Computername.xml
 # --------------------------------------------------------------------------------------------
