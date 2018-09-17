@@ -5,7 +5,7 @@ $Iso = "C:\iso\14393.0.161119-1705.RS1_REFRESH_SERVER_EVAL_X64FRE_EN-US.ISO"
 #$Iso = "C:\iso\Windows_InsiderPreview_Server_vNext_en-us_17692___LTSC.iso"
 
 #----------------------------------------------------------------
-$ComputerName = "WS2016_DesktopExperience_withUpdates1807_en-US"
+$ComputerName = "WS2016_DesktopExperience_withUpdates1809_en-US"
 #$ComputerName = "Windows_InsiderPreview_Server_vNext_en-us_17692___LTSC"
 #----------------------------------------------------------------
 
