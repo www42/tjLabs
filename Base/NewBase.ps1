@@ -1,12 +1,12 @@
 ﻿$Lab = "Base"
 $LabDir = "C:\Labs\Base"
 $LabSwitch = "External Network"
-$Iso = "C:\iso\14393.0.161119-1705.RS1_REFRESH_SERVER_EVAL_X64FRE_EN-US.ISO"
-#$Iso = "C:\iso\Windows_InsiderPreview_Server_vNext_en-us_17692___LTSC.iso"
+#$Iso = "C:\iso\14393.0.161119-1705.RS1_REFRESH_SERVER_EVAL_X64FRE_EN-US.ISO"  # Windows Server 2016
+$Iso = "C:\iso\17763.1.180914-1434.rs5_release_SERVER_EVAL_x64FRE_en-us.iso"  # Windows Server 2019
 
 #----------------------------------------------------------------
-$ComputerName = "WS2016_DesktopExperience_withUpdates1809_en-US"
-#$ComputerName = "Windows_InsiderPreview_Server_vNext_en-us_17692___LTSC"
+#$ComputerName = "WS2016_DesktopExperience_withUpdates1810_en-US"
+$ComputerName = "WS2019_DesktopExperience_withUpdates1810_en-US"
 #----------------------------------------------------------------
 
 New-LabVm -ComputerName $ComputerName -Lab $Lab -Dir $LabDir -Switch $LabSwitch
