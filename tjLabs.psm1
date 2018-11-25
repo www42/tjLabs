@@ -53,9 +53,9 @@ function New-Lab {
       New-VMSwitch -Name "External Network" -NetAdapterName $NetAdapter.Name}
 
     # create LabRouter
-    if (Get-VM -Name (ConvertTo-VmName -ComputerName "R1" -Lab $Lab)) {Write-Output "Lab Router already exist. Nothing to do."}
+    if (Get-VM -Name (ConvertTo-VmName -ComputerName "R1" -Lab $Lab) -ErrorAction SilentlyContinue) {Write-Output "Lab Router already exist. Nothing to do."}
     else {
-      New-LabRouter -Lab $Lab -ComputerName "R1"}
+      New-LabRouter -ComputerName "R1" -Lab $Lab -Dir $Dir -Switch $Switch}
     
 }
 function Get-LabVm {
@@ -521,12 +521,12 @@ function Revert-Lab {
 function New-LabRouter {
   
   [CmdletBinding()]Param(
-  [Parameter(Mandatory=$true, Position=1)][string]$ComputerName,
-  [Parameter(Mandatory=$false,Position=2)][string]$Lab      = $Global:Lab,    
-  [Parameter(Mandatory=$false,Position=3)][string]$Dir      = $Global:LabDir,
-  [Parameter(Mandatory=$false,Position=4)][string]$Switch   = $Global:LabSwitch,
-  [Parameter(Mandatory=$false,Position=5)][string]$Version  = $Global:LabVmVersion,
-  [Parameter(Mandatory=$false,Position=6)][string]$BaseVhd  = $Global:LabBaseGen1
+  [Parameter(Mandatory=$true, Position=0)][string]$ComputerName,
+  [Parameter(Mandatory=$false,Position=1)][string]$Lab      = $Global:Lab,    
+  [Parameter(Mandatory=$false,Position=2)][string]$Dir      = $Global:LabDir,
+  [Parameter(Mandatory=$false,Position=3)][string]$Switch   = $Global:LabSwitch,
+  [Parameter(Mandatory=$false,Position=4)][string]$Version  = $Global:LabVmVersion,
+  [Parameter(Mandatory=$false,Position=5)][string]$BaseVhd  = $Global:LabBaseGen1
   )
   
   [int64]$Mem = 512MB
