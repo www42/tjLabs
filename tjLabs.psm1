@@ -1,19 +1,4 @@
-﻿function New-FooVm {
-  [CmdletBinding()]
-  param (
-    
-  )
-  
-  begin {
-  }
-  
-  process {
-  }
-  
-  end {
-  }
-}
-function ConvertTo-ComputerName {
+﻿function ConvertTo-ComputerName {
 <#
 .Synopsis
    Converts VmName to ComuterName by trimming off the LAB string
@@ -41,14 +26,13 @@ function ConvertTo-VmName {
     $VmName = "$Lab-$ComputerName"
     Write-Output $VmName
 }
-
 function New-Lab {
     [CmdletBinding()]Param(
-        [Parameter(Mandatory = $true, Position = 1)][string]$Lab,
-        [Parameter(Mandatory = $true, Position = 2)][string]$IpHost,
-        [Parameter(Mandatory = $false, Position = 3)][string]$IpHostPrefixLength = $Global:LabIpPrefixLength,
-        [Parameter(Mandatory = $false, Position = 4)][string]$Dir = $Global:LabDir,
-        [Parameter(Mandatory = $false, Position = 5)][string]$Switch = $Global:LabSwitch
+        [Parameter(Mandatory = $true, Position = 0)][string]$Lab,
+        [Parameter(Mandatory = $true, Position = 1)][string]$IpHost,
+        [Parameter(Mandatory = $true, Position = 2)][string]$IpHostPrefixLength,
+        [Parameter(Mandatory = $true, Position = 3)][string]$Dir,
+        [Parameter(Mandatory = $true, Position = 4)][string]$Switch
     )
     # create LabDir
     if (Test-Path -Path $Dir) {Write-Output $('$LabDir  ' + $Dir + '  already exists. Nothing to do.')}
@@ -63,13 +47,17 @@ function New-Lab {
     New-NetIPAddress -IPAddress $IpHost -PrefixLength $IpHostPrefixLength -InterfaceAlias $NetAdapter.InterfaceAlias | Out-Null
 
     # create External Switch
-    $NetAdapter = Get-NetAdapter -Physical | Where-Object Status -EQ "Up"
-    New-VMSwitch -Name "External Network" -NetAdapterName $NetAdapter.Name
+    if (Get-VMSwitch -Name "External Network" -ErrorAction SilentlyContinue) {Write-Output "External Network already exist. Nothing to do."}
+    else {
+      $NetAdapter = Get-NetAdapter -Physical | Where-Object Status -EQ "Up"
+      New-VMSwitch -Name "External Network" -NetAdapterName $NetAdapter.Name}
 
     # create LabRouter
-    New-LabRouter -Lab $Lab -ComputerName "R1"
+    if (Get-VM -Name (ConvertTo-VmName -ComputerName "R1" -Lab $Lab)) {Write-Output "Lab Router already exist. Nothing to do."}
+    else {
+      New-LabRouter -Lab $Lab -ComputerName "R1"}
+    
 }
-
 function Get-LabVm {
   [CmdletBinding()]Param(
   [Parameter(Mandatory=$true, Position=1,ValueFromPipeline=$true,ValueFromPipelineByPropertyName=$true)][string[]]$ComputerName,
@@ -106,7 +94,6 @@ function Get-Lab {
   Get-LabVm -ComputerName $ComputerName
   }
 }
-
 function Show-LabVm {
   [CmdletBinding()]Param (
   [Parameter(Mandatory=$true,Position=1,ValueFromPipeline=$true,ValueFromPipelineByPropertyName=$true)][string[]]$ComputerName,
@@ -149,9 +136,7 @@ function Show-Lab {
   
   Show-LabVm -ComputerName '*' -Lab $Lab
 }
-
 New-Alias -Name shl -Value Show-Lab
-
 function Start-LabVm {
     <#
   .SYNOPSIS
@@ -178,9 +163,7 @@ function Start-LabVm {
     }
     End {}
 }
-
 # There is no "Start-Lab" by intention.
-
 function Stop-LabVm {
     <#
   .SYNOPSIS
@@ -207,7 +190,6 @@ function Stop-LabVm {
     }
     End {}
 }
-
 function Stop-Lab {
     <#
   .SYNOPSIS
@@ -229,7 +211,6 @@ function Stop-Lab {
          Stop-LabVm -ComputerName $ComputerName -Lab $Lab
       }
 }
-
 function Checkpoint-LabVm {
     [CmdletBinding()]Param (
         [Parameter(Mandatory = $true, Position = 1, ValueFromPipeline = $true, ValueFromPipelineByPropertyName = $true)][string[]]$ComputerName,
@@ -250,7 +231,6 @@ function Checkpoint-LabVm {
     }
     End {}
 }
-
 function Checkpoint-Lab {
   [CmdletBinding()]Param(
   [Parameter(Mandatory=$true, Position=1)][string]$Description,
@@ -263,7 +243,6 @@ function Checkpoint-Lab {
         Checkpoint-LabVm -ComputerName $ComputerName -Description $Description -Lab $Lab
       }
 }
-
 function New-LabVmGen1 {
     [CmdletBinding()]Param(
         [Parameter(Mandatory = $true, Position = 1, ValueFromPipeline = $true)][string[]]$ComputerName,
@@ -289,7 +268,6 @@ function New-LabVmGen1 {
     }
     End {}
 }
-
 function New-LabVmGen1Differencing {
     [CmdletBinding()]Param(
         [Parameter(Mandatory = $true, Position = 1, ValueFromPipeline = $true)][string[]]$ComputerName,
@@ -316,7 +294,6 @@ function New-LabVmGen1Differencing {
     }
     End {}
 }
-
 function New-LabVmGen1Copying {
   [CmdletBinding()]Param(
   [Parameter(Mandatory=$true, Position=1,ValueFromPipeline=$true)][string[]]$ComputerName,
@@ -343,7 +320,6 @@ function New-LabVmGen1Copying {
   }
   End {}
 }
-
 function New-LabVm {
   [CmdletBinding()]Param(
   [Parameter(Mandatory=$true, Position=1,ValueFromPipeline=$true)][string[]]$ComputerName,
@@ -440,7 +416,6 @@ function New-LabVmCopying {
   }
   End {}
 }
-
 function Remove-LabVm {
   [CmdletBinding()]Param(
   [Parameter(Mandatory=$true, Position=1,ValueFromPipeline=$true,ValueFromPipelineByPropertyName=$true)][string[]]$ComputerName,
@@ -485,7 +460,6 @@ function Remove-Lab {
   if (Get-VMSwitch -Name $Switch -ErrorAction SilentlyContinue) { Remove-VMSwitch -Name $Switch -Force }
   else {Write-Output $('$LabSwitch  ' + $Switch + '  does not exist. Nothing to do.')}
 }
-
 function Connect-LabVm {
   [CmdletBinding()]Param(
   [Parameter(Mandatory=$true, Position=1,ValueFromPipeline=$true,ValueFromPipelineByPropertyName=$true)][string[]]$ComputerName,
@@ -500,7 +474,6 @@ function Connect-LabVm {
   }
   End {}
 }
-
 function Revert-LabVm {
   <#
   .SYNOPSIS
@@ -545,7 +518,6 @@ function Revert-Lab {
        Revert-LabVm -ComputerName $ComputerName -Lab $Lab
     }
 }
-
 function New-LabRouter {
   
   [CmdletBinding()]Param(
