@@ -6,7 +6,7 @@ $Iso = "C:\iso\17763.1.180914-1434.rs5_release_SERVER_EVAL_x64FRE_en-us.iso"  # 
 
 #----------------------------------------------------------------
 #$ComputerName = "WS2016_DesktopExperience_withUpdates1810_en-US"
-$ComputerName = "WS2019_DesktopExperience_withUpdates1810_en-US"
+$ComputerName = "WS2019_DesktopExperience_withUpdates1811_en-US"
 #----------------------------------------------------------------
 
 New-LabVm -ComputerName $ComputerName -Lab $Lab -Dir $LabDir -Switch $LabSwitch
