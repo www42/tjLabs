@@ -1,12 +1,12 @@
 ﻿$Lab = "Base"
 $LabDir = "C:\Labs\Base"
 $LabSwitch = "External Network"
-#$Iso = "C:\iso\14393.0.161119-1705.RS1_REFRESH_SERVER_EVAL_X64FRE_EN-US.ISO"  # Windows Server 2016
-$Iso = "C:\iso\17763.1.180914-1434.rs5_release_SERVER_EVAL_x64FRE_en-us.iso"  # Windows Server 2019
+$Iso = "C:\iso\14393.0.161119-1705.RS1_REFRESH_SERVER_EVAL_X64FRE_EN-US.ISO"  # Windows Server 2016
+#$Iso = "C:\iso\17763.1.180914-1434.rs5_release_SERVER_EVAL_x64FRE_en-us.iso"  # Windows Server 2019
 
 #----------------------------------------------------------------
-#$ComputerName = "WS2016_DesktopExperience_withUpdates1810_en-US"
-$ComputerName = "WS2019_DesktopExperience_withUpdates1811_en-US"
+$ComputerName = "WS2016_DesktopExperience_withUpdates1811_en-US"
+#$ComputerName = "WS2019_DesktopExperience_withUpdates1811_en-US"
 #----------------------------------------------------------------
 
 New-LabVm -ComputerName $ComputerName -Lab $Lab -Dir $LabDir -Switch $LabSwitch
@@ -76,3 +76,7 @@ Connect-LabVm -ComputerName $ComputerName
 # cd c:\windows\System32\Sysprep
 # .\sysprep /generalize /oobe /shutdown /unattend:.\CopyProfile_and_OOBE_and_Computername.xml
 # --------------------------------------------------------------------------------------------
+
+# Wenn fertig kopiert:
+$NewBaseFile = "c:\Base\$VmName.vhdx"
+Get-FileHash -Algorithm MD5 -Path $NewBaseFile | % Hash  > "$NewBaseFile.md5"
